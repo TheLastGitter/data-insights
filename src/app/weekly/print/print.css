@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap');
+
+.print-report { max-width: 920px; margin: 0 auto; padding: 0 48px; color: #142033; font-family: Inter, Arial, sans-serif; }
+.print-cover { min-height: 600px; display: flex; flex-direction: column; justify-content: center; border-bottom: 4px solid #b88b3d; }
+.kicker { color: #b88b3d; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; }
+.print-cover h1 { margin: 18px 0; font: 600 68px/1.02 'Source Serif 4', Georgia, serif; letter-spacing: -.025em; }
+.print-cover h1 em { color: #b88b3d; font-style: normal; }
+.print-cover > p { max-width: 620px; font-size: 16px; line-height: 1.7; color: #536071; }
+.cover-meta { margin-top: 36px; font-size: 11px; color: #758093; letter-spacing: .08em; }
+.print-report section { padding: 44px 0; border-bottom: 1px solid #ded8cc; }
+.print-report h2 { margin: 0 0 22px; font: 600 32px/1.1 'Source Serif 4', Georgia, serif; }
+.print-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.print-grid.four { grid-template-columns: repeat(4, 1fr); }
+.print-grid article { border: 1px solid #ded8cc; padding: 18px; }
+.print-grid h3 { margin: 10px 0; font: 600 18px/1.2 'Source Serif 4', Georgia, serif; }
+.print-grid p { color: #536071; font-size: 12px; line-height: 1.55; }
+.print-grid strong { font-size: 10px; letter-spacing: .13em; text-transform: uppercase; }
+.print-report table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.print-report th, .print-report td { border-bottom: 1px solid #ded8cc; padding: 10px 0; text-align: left; }
+.print-report th:last-child, .print-report td:last-child { text-align: right; }
+.print-report ol { padding-left: 26px; }
+.print-report li { margin: 16px 0; padding-left: 8px; font: 20px/1.35 'Source Serif 4', Georgia, serif; }
+.print-report footer { padding: 22px 0; color: #758093; font-size: 10px; }
+@media print { @page { size: A4; margin: 14mm; } .print-report { padding: 0; } .print-cover { min-height: 235mm; break-after: page; } .print-report section { break-inside: avoid; } }
+@media screen and (max-width: 700px) { .print-report { padding: 0 20px; } .print-cover h1 { font-size: 48px; } .print-grid, .print-grid.four { grid-template-columns: 1fr; } }
