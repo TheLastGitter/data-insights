@@ -10,6 +10,12 @@ import type {
   TopicSection,
 } from "./types";
 import { IMPACT_DIMENSIONS, SOURCES, TOPICS } from "./types";
+import {
+  UNLICENSED_SURFACE,
+  assertNoFullText,
+  formatOurDek,
+} from "./rights";
+import { hydrateMissingImages } from "./feedImage";
 
 // ---- keyword lexicons for impact classification ----
 const LEX: Record<ImpactDimension, string[]> = {
@@ -138,8 +144,8 @@ const STOP = new Set([
   "over", "up", "down", "out", "about", "more", "most", "some", "any",
 ]);
 
-function classify(title: string): { impacts: ImpactDimension[]; signals: string[] } {
-  const t = title.toLowerCase();
+function classify(title: string, excerpt?: string): { impacts: ImpactDimension[]; signals: string[] } {
+  const t = `${title} ${excerpt ?? ""}`.toLowerCase();
   const impacts: ImpactDimension[] = [];
   const signals: string[] = [];
   for (const dim of IMPACT_DIMENSIONS) {
@@ -433,11 +439,11 @@ function watchForTopics(topics: Topic[]): string[] {
   return out.slice(0, 2);
 }
 
-export function synthesizeReport(
+export async function synthesizeReport(
   raw: RawEvent[],
   sourcesUsed: SourceId[],
   sourcesFailed: SourceId[]
-): DailyReport {
+): Promise<DailyReport> {
   // Dedupe by normalized title across sources (keep highest-score).
   const byTitle = new Map<string, RawEvent>();
   for (const e of raw) {
@@ -449,23 +455,44 @@ export function synthesizeReport(
   }
   const deduped = [...byTitle.values()];
 
-  // Rank by score (fallback to recency).
-  deduped.sort((a, b) => {
-    const sa = a.score ?? 0;
-    const sb = b.score ?? 0;
-    if (sb !== sa) return sb - sa;
-    return (b.publishedAt ?? 0) - (a.publishedAt ?? 0);
-  });
+  const eventsBySource = new Map<SourceId, RawEvent[]>();
+  for (const event of deduped) {
+    const list = eventsBySource.get(event.source) ?? [];
+    list.push(event);
+    eventsBySource.set(event.source, list);
+  }
+  for (const list of eventsBySource.values()) {
+    list.sort((a, b) => {
+      const sa = a.score ?? 0;
+      const sb = b.score ?? 0;
+      if (sb !== sa) return sb - sa;
+      return (b.publishedAt ?? 0) - (a.publishedAt ?? 0);
+    });
+  }
+  const top: RawEvent[] = [];
+  const queues = [...eventsBySource.values()];
+  while (top.length < 30) {
+    let added = false;
+    for (const queue of queues) {
+      const next = queue.shift();
+      if (!next) continue;
+      top.push(next);
+      added = true;
+      if (top.length >= 30) break;
+    }
+    if (!added) break;
+  }
 
-  const top = deduped.slice(0, 30);
+  await hydrateMissingImages(top);
 
   const events: ReportEvent[] = top.map((e, i) => {
-    const { impacts, signals } = classify(e.title);
+    const { impacts, signals } = classify(e.title, e.excerpt);
     const topics = classifyTopics(e.title, e.source, e.tags);
     const when = new Date(e.publishedAt || Date.now());
     const who = extractWho(e.title);
     const where = extractWhere(e.title, e.source);
     const primary = impacts[0];
+    const contentBasis = e.contentBasis;
     return {
       id: `${e.source}-${i}`,
       source: e.source,
@@ -481,8 +508,16 @@ export function synthesizeReport(
       }),
       where,
       why: `${signals.slice(0, 3).join(", ")} signal(s) detected from ${SOURCES[e.source].label}.`,
-      how: e.url ? `Reported via ${SOURCES[e.source].label}; see source for methodology.` : "Aggregated from public feed.",
-      summary: e.summary ?? e.title,
+      how: `Outbound link only. No licensed full text. Basis: ${contentBasis}.`,
+      summary: formatOurDek({
+        sourceLabel: SOURCES[e.source].label,
+        topics,
+        signals,
+        basis: contentBasis,
+      }),
+      excerpt: e.excerpt,
+      imageUrl: e.imageUrl,
+      contentBasis,
       impacts,
       signals,
       topics,
@@ -532,7 +567,7 @@ export function synthesizeReport(
     "Which signals indicate a behavior or infra shift our customers will expect from us within 6 months?",
   ];
 
-  return {
+  const report: DailyReport = {
     date: new Date().toISOString().slice(0, 10),
     generatedAt: Date.now(),
     totalEvents: events.length,
@@ -545,5 +580,13 @@ export function synthesizeReport(
     keyQuestions,
     sourcesUsed,
     sourcesFailed,
+    rights: {
+      licensedFullText: false,
+      storesArticleHtml: false,
+      maxExcerptChars: UNLICENSED_SURFACE.maxExcerptChars,
+      notice: UNLICENSED_SURFACE.notice,
+    },
   };
+  assertNoFullText(report);
+  return report;
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RefreshButton } from "@/components/portal/RefreshButton";
 
 export function SiteNav() {
   return (
@@ -13,6 +14,7 @@ export function SiteNav() {
           </span>
         </Link>
         <div className="hidden items-center gap-1 text-sm lg:flex">
+          <NavLink href="/portal">Portal</NavLink>
           <NavLink href="/">Overview</NavLink>
           <NavLink href="/report">Daily</NavLink>
           <NavLink href="/weekly">Weekly</NavLink>
@@ -20,15 +22,17 @@ export function SiteNav() {
           <NavLink href="/history">History</NavLink>
           <NavLink href="/#sources">Sources</NavLink>
           <NavLink href="/#topics">Themes</NavLink>
+          <RefreshButton compact />
         </div>
         <div className="hidden items-center gap-2 sm:flex lg:hidden">
+          <NavLink href="/portal">Portal</NavLink>
           <NavLink href="/report">Daily</NavLink>
           <NavLink href="/weekly">Weekly</NavLink>
-          <NavLink href="/command-center">Command</NavLink>
+          <RefreshButton compact />
         </div>
-        <Link href="/command-center" className="ml-3 inline-flex items-center gap-2 border border-gold/50 px-3 py-2 text-xs font-medium text-gold transition hover:bg-gold hover:text-navy-deep sm:hidden">
-          Command →
-        </Link>
+        <div className="flex items-center gap-2 sm:hidden">
+          <RefreshButton compact />
+        </div>
       </div>
     </nav>
   );

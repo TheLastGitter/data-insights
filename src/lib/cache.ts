@@ -23,3 +23,7 @@ export function setCachedReport(report: DailyReport): void {
   recordAvailability(report.sourcesUsed, report.sourcesFailed);
   void saveDailyReport(report);
 }
+
+export function clearCachedReport(): void {
+  cached = null;
+}

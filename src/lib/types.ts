@@ -96,6 +96,8 @@ export const SOURCES: Record<SourceId, SourceMeta> = {
   fiercebiotech: { id: "fiercebiotech", label: "Fierce Biotech", accent: "#005a7a" },
 };
 
+export type ContentBasis = "title-only" | "rss-excerpt" | "api-metadata";
+
 /** Raw, source-native item normalized into a common shape. */
 export interface RawEvent {
   source: SourceId;
@@ -104,7 +106,11 @@ export interface RawEvent {
   author?: string;
   publishedAt: number; // epoch ms
   score?: number; // upvotes / points
-  summary?: string;
+  /** Publisher feed teaser only; never article HTML. */
+  excerpt?: string;
+  /** Thumbnail from the feed or public API, not scraped article HTML. */
+  imageUrl?: string;
+  contentBasis: ContentBasis;
   tags?: string[];
 }
 
@@ -122,7 +128,12 @@ export interface ReportEvent {
   where: string;
   why: string;
   how: string;
+  /** Our classification dek — not a republished article. */
   summary: string;
+  /** Capped publisher feed teaser, if the feed supplied one. */
+  excerpt?: string;
+  imageUrl?: string;
+  contentBasis: ContentBasis;
   impacts: ImpactDimension[];
   signals: string[]; // keywords driving classification
   ideasWorthExploring: string[];
@@ -158,4 +169,11 @@ export interface DailyReport {
   keyQuestions: string[];
   sourcesUsed: SourceId[];
   sourcesFailed: SourceId[];
+  /** Present on reports generated after the unlicensed portal contract. */
+  rights?: {
+    licensedFullText: false;
+    storesArticleHtml: false;
+    maxExcerptChars: number;
+    notice: string;
+  };
 }

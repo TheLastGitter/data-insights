@@ -1,13 +1,14 @@
 import { ingestAll } from "./ingest";
 import { synthesizeReport } from "./synthesize";
-import { getCachedReport, setCachedReport } from "./cache";
+import { clearCachedReport, getCachedReport, setCachedReport } from "./cache";
 import type { DailyReport } from "./types";
 
-export async function loadDailyReport(): Promise<DailyReport> {
+export async function loadDailyReport(options?: { force?: boolean }): Promise<DailyReport> {
+  if (options?.force) clearCachedReport();
   const cached = getCachedReport();
   if (cached) return cached;
   const { events, sourcesUsed, sourcesFailed } = await ingestAll();
-  const report = synthesizeReport(events, sourcesUsed, sourcesFailed);
+  const report = await synthesizeReport(events, sourcesUsed, sourcesFailed);
   setCachedReport(report);
   return report;
 }

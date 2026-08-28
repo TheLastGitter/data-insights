@@ -13,6 +13,7 @@ Open `http://localhost:3000`.
 
 ## Product surfaces
 
+- `/portal` — MSN-style headline river **without licensed full text** (headlines, capped feed teasers, our classification, outbound links)
 - `/` — platform overview, source registry, topic map
 - `/report` — daily 5W1H report
 - `/weekly` — weekly synthesis with themes, momentum, opportunities, risks, and experiments
@@ -27,6 +28,7 @@ Open `http://localhost:3000`.
 JSON APIs:
 
 ```text
+GET /api/portal
 GET /api/report
 GET /api/weekly
 GET /api/analyst
@@ -79,3 +81,14 @@ Example MCP client configuration:
 ```
 
 The analyst engine is explainable by default and optionally LLM-enriched when `OPENAI_API_KEY` is configured. Without credentials, the deterministic fallback remains active. Agents can consume all structured evidence without losing source provenance.
+
+## Without a publisher license
+
+This is an aggregator, not a reprint site.
+
+**Shipped:** headlines, canonical URLs, timestamps, public API metadata (Hacker News, GitHub), RSS/Atom teasers capped at 280 characters, **feed/API thumbnails the publisher already attached**, and original 5W1H classification.
+
+**Not stored or shown:** article HTML, `content:encoded`, ArXiv abstracts, scraped `og:image` from article pages, or paywalled bodies.
+
+The river is `/portal`. Refresh the live feed with the **Refresh** button (also `POST /api/refresh`). The machine-readable form is `GET /api/portal`.
+

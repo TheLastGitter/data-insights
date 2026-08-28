@@ -11,7 +11,7 @@ export async function GET() {
     endpoints: [
       { name: "daily_report", method: "GET", path: "/api/report", description: "Get the current daily report with events, 5W1H, topics, sources, and questions." },
       { name: "weekly_report", method: "GET", path: "/api/weekly", description: "Get the current weekly synthesis with themes, momentum, coverage, risks, opportunities, and experiments." },
-      { name: "analyst_brief", method: "GET", path: "/api/analyst", description: "Get explainable analyst posture and recommendations." },
+      { name: "refresh_feed", method: "POST", path: "/api/refresh", description: "Clear cache, re-ingest sources, and re-run smart image lookup." },
       { name: "source_detail", method: "GET", path: "/sources/{id}", description: "Inspect source assessment, uptime, coverage, and recent events." },
       { name: "topic_detail", method: "GET", path: "/topics/{slug}", description: "Inspect topic sub-themes, source coverage, questions, and events." },
     ],
