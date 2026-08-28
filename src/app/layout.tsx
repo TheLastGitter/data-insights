@@ -24,7 +24,11 @@ export const metadata: Metadata = {
     "Live source registry, theme taxonomy, and daily synthesized scout reports for founders and innovators — structured with 5W1H and forward-looking impact analysis.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="en"

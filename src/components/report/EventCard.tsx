@@ -70,6 +70,11 @@ export function EventCard({ event }: { event: ReportEvent }) {
       <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">
         {event.summary}
       </p>
+      {event.excerpt ? (
+        <p className="mt-3 border-l-2 border-rule pl-3 text-[12px] leading-relaxed text-muted">
+          Publisher excerpt: {event.excerpt}
+        </p>
+      ) : null}
 
       {/* 5W1H exhibit table */}
       <table className="report-table mt-4 w-full text-[12.5px]">

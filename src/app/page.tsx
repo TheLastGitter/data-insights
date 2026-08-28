@@ -26,7 +26,7 @@ export default async function DashboardPage() {
   let report = getCachedReport();
   if (!report) {
     const { events, sourcesUsed, sourcesFailed } = await ingestAll();
-    report = synthesizeReport(events, sourcesUsed, sourcesFailed);
+    report = await synthesizeReport(events, sourcesUsed, sourcesFailed);
     setCachedReport(report);
   }
 
@@ -51,8 +51,11 @@ export default async function DashboardPage() {
                 topic context, and questions worth carrying forward.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
-                <Link href="/report" className="gold-gradient inline-flex items-center gap-2 rounded-sm px-5 py-3 text-sm font-semibold text-navy-deep shadow-lg transition hover:-translate-y-0.5">
-                  Read today&apos;s briefing <span>→</span>
+                <Link href="/portal" className="gold-gradient inline-flex items-center gap-2 rounded-sm px-5 py-3 text-sm font-semibold text-navy-deep shadow-lg transition hover:-translate-y-0.5">
+                  Open today&apos;s portal <span>→</span>
+                </Link>
+                <Link href="/report" className="inline-flex items-center gap-2 rounded-sm border border-white/20 px-5 py-3 text-sm text-white/80 transition hover:border-gold hover:text-gold">
+                  Read today&apos;s briefing
                 </Link>
                 <Link href="/command-center" className="inline-flex items-center gap-2 rounded-sm border border-white/20 px-5 py-3 text-sm text-white/80 transition hover:border-gold hover:text-gold">
                   Open command center

@@ -16,7 +16,7 @@ export default async function ReportPage() {
   let report = getCachedReport();
   if (!report) {
     const { events, sourcesUsed, sourcesFailed } = await ingestAll();
-    report = synthesizeReport(events, sourcesUsed, sourcesFailed);
+    report = await synthesizeReport(events, sourcesUsed, sourcesFailed);
     setCachedReport(report);
   }
 
